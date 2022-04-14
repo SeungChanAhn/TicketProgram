@@ -22,7 +22,6 @@ int main() {
     int alwaysPrefer; // 상시우대 혜택 
     int whetherToBuy; // 더 구매할지 안할지 
     
-	printf(
     while (true) {
         int money = 0;
         printf("******************** 티 켓 구 매 ********************\n\n");
