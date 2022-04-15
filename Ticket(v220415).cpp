@@ -131,7 +131,8 @@ int main() {
             printf("\n다둥이 행복카드 회원 가족 본인(카드에 명기된 가족에 한함)\n종합이용권 30%% 우대\n");
         } else if (alwaysPrefer == 6) {
             price = price;
-        }
+        } else {
+		}
         
         // 만 65세 이상 어른일 때, 상시 우대 혜택에서 해당사항이 없는 경우. 어린이 요금 적용 
         if (realAge >= ADULT_MAX_AGE && ticketChoice == 1 && timeChoice == 1 && alwaysPrefer == 6) {
@@ -142,7 +143,8 @@ int main() {
             price = PARK_1DAY_KID;
         } else if (realAge >= ADULT_MAX_AGE && ticketChoice == 2 && timeChoice == 2 && alwaysPrefer == 6) {
             price = PARK_AFTER4_KID;
-        }
+        } else {
+		}
         printf("\n티켓 결제금액은 %d원 입니다.", price);
 
         // 계속구매 혹은 종료 
@@ -155,7 +157,8 @@ int main() {
             totalprice += price;
             printf("\n총 결제하실 금액은 %d원 입니다.", totalprice);
             break;
-        }
+        } else {
+		}
     }
     return 0;
 }
