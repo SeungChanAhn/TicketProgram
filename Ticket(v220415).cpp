@@ -50,9 +50,9 @@ int main() {
             }
         } else {
 		}
-	
         printf("\n고객님의 만 나이는 %d 세입니다. ", realAge);
-
+        
+		// 선택한 티켓의 가격 저장 
         if (ticketChoice == 1 && timeChoice == 1 && realAge >= ADULT_MIN_AGE) {
             price += ALL_1DAY_ADULT;
         } else if (ticketChoice == 1 && timeChoice == 1 && realAge >= TEEN_MIN_AGE && realAge < ADULT_MIN_AGE) {
@@ -133,7 +133,7 @@ int main() {
             price = price;
         }
         
-        // 주민번호 검사 후 만 65세 이상 어른일 때, 상시 우대 혜택에서 해당사항이 없는 경우. 어린이 요금 
+        // 만 65세 이상 어른일 때, 상시 우대 혜택에서 해당사항이 없는 경우. 어린이 요금 적용 
         if (realAge >= ADULT_MAX_AGE && ticketChoice == 1 && timeChoice == 1 && alwaysPrefer == 6) {
             price = ALL_1DAY_KID;
         } else if (realAge >= ADULT_MAX_AGE && ticketChoice == 1 && timeChoice == 2 && alwaysPrefer == 6) {
@@ -143,8 +143,6 @@ int main() {
         } else if (realAge >= ADULT_MAX_AGE && ticketChoice == 2 && timeChoice == 2 && alwaysPrefer == 6) {
             price = PARK_AFTER4_KID;
         }
-
-
         printf("\n티켓 결제금액은 %d원 입니다.", price);
 
         // 계속구매 혹은 종료 
