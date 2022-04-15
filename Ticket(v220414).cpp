@@ -34,6 +34,12 @@ int main() {
         scanf("%d", & personNumberFront);
         printf("\n주민등록번호 뒷자리 첫 번째 숫자를 입력해 주세요.\n입력 : ");
         scanf("%d", & personNumberBack);
+        printf("***************************** 우 대 할 인  *****************************");
+        printf("\n\n해당사항이 있으시면 입력해 주세요. 없다면 6번을 입력해 주세요. (중복 불가)\n");
+        printf("1. 장애인\n2. 국가유공자\n3. 휴가장병\n4. 임산부\n5. 다둥이 행복카드\n6. 해당사항 없음\n선택 : ");
+        scanf("%d", & alwaysPrefer);
+        
+        // 만 나이계산 
         if (personNumberBack == 1 || personNumberBack == 2) { // 1900년대생  
             age = (int)(today * 0.0001) + 100 - (int)(personNumberFront * 0.0001) + 1;
             if (today - (int)(today * 0.0001) * 10000 < personNumberFront - (int)(personNumberFront * 0.0001) * 10000) {
@@ -50,7 +56,6 @@ int main() {
             }
         } else {
 		}
-        printf("\n고객님의 만 나이는 %d 세입니다. ", realAge);
         
 		// 선택한 티켓의 가격 저장 
         if (ticketChoice == 1 && timeChoice == 1 && realAge >= ADULT_MIN_AGE) {
@@ -93,7 +98,7 @@ int main() {
             price = FREE;
         } else if (realAge >= 1 && realAge < 3) {
         	printf("\n\n만 1세에서 3세까지 유아 놀이시설은 유료로 이용 가능합니다. 이용하시겠습니까?\n");
-        	printf("1. 이용O (베이비요금 15000원 결제)\n2. 이용X (파크입장 무료)\n선택 : ");
+        	printf("1. 이용O\n2. 이용X (파크입장 무료)\n선택 : ");
         	scanf("%d", & kidsPlayroom);
 			if (kidsPlayroom == 1){
 				price = BABY;
@@ -102,12 +107,6 @@ int main() {
 			}
 		} else {
 		}
-        printf("\n\n할인 미적용 금액은 %d원 입니다.\n\n", price);
-
-        printf("***************************** 우 대 할 인  *****************************");
-        printf("\n\n해당사항이 있으시면 입력해 주세요. 없다면 6번을 입력해 주세요. (중복 불가)\n");
-        printf("1. 장애인\n2. 국가유공자\n3. 휴가장병\n4. 임산부\n5. 다둥이 행복카드\n6. 해당사항 없음\n선택 : ");
-        scanf("%d", & alwaysPrefer);
 
 		// 상시 우대 혜택 
         if (alwaysPrefer == 1) { // 장애인 
@@ -146,7 +145,7 @@ int main() {
         } else {
 		}
         printf("\n티켓 결제금액은 %d원 입니다.", price);
-        totalprice += price;
+        totalprice += price; // 금액 총합 저장 
 
         // 계속구매 혹은 종료 
         printf("\n\n계속 구매하시겠습니까?\n");
