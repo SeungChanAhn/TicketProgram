@@ -7,21 +7,20 @@ const int ALL_1DAY_ADULT = 62000, ALL_1DAY_TEEN = 54000, ALL_1DAY_KID = 47000;
 const int ALL_AFTER4_ADULT = 50000, ALL_AFTER4_TEEN = 43000, ALL_AFTER4_KID = 36000;
 const int PARK_1DAY_ADULT = 59000, PARK_1DAY_TEEN = 52000, PARK_1DAY_KID = 46000;
 const int PARK_AFTER4_ADULT = 47000, PARK_AFTER4_TEEN = 41000, PARK_AFTER4_KID = 35000;
-const int BABY = 15000;
-const int FREE = 0;
-const int ADULT_MAX_AGE = 65, ADULT_MIN_AGE = 18, TEEN_MIN_AGE = 13, KID_MAX_AGE = 12, KID_MIN_AGE = 3;
-const int BABY_AGE_0 = 0, BABY_AGE_1 = 1;
+const int BABY = 15000, FREE = 0;
+const int ADULT_MAX_AGE = 65, ADULT_MIN_AGE = 18, TEEN_MIN_AGE = 13, KID_MAX_AGE = 12, KID_MIN_AGE = 3, BABY_AGE_0 = 0, BABY_AGE_1 = 1;
 const float DISABLED = 0.5, NATIONAL_MERIT = 0.5, SODIER_ON_VACATION = 0.49, PREGNANT = 0.5, MULTIPLE_KIDS = 0.3;
+
 int price = 0; // 티켓금액 
 int ticketCount = 0; // 티켓 구매 수량
 int totalprice = 0; // 총 결제금액 
 int ticketChoice; // 종합이용권과 파크이용권 선택 
 int timeChoice; // 시간 이용권 선택
-int today = 220418; // 오늘날짜 
+int today = 0; // 오늘날짜 저장 
 int age; // 기본 나이 
 int realAge; // 만 나이 
-int personNumberFront; // 주민번호 앞자리 6자리 
-int personNumberBack; // 주민번호 뒷 1자리 
+int residentRegistrationNumber_Front; // 주민번호 앞자리 6자리 
+int residentRegistrationNumber_Back; // 주민번호 뒷 1자리 
 int personType = 0; // 어른, 청소년, 어린이, 베이비 
 int kidsPlayroom; // 유아 놀이방 선택할지 안할지 
 int alwaysPrefer; // 상시우대 혜택 
@@ -29,9 +28,10 @@ int whetherToBuy; // 더 구매할지 안할지
 int orderCount = 0;  // 배열 행 
 int orderList[100][100] = {0}; // 영수증 배열 
 
-// 함수	
+// 함수
+// 이용권 선택 
 int checkTicketChoice() {
-	printf("******************** 티 켓 구 매 ********************\n\n");
+	printf("***************************** 티 켓 구 매 *****************************\n\n");
 	do {
 	printf("1. 종합이용권 (이용범위 : 롯데월드 + 민속박물관)\n2. 파크이용권 (이용범위 : 롯데월드)\n선택 : ");
     scanf("%d", & ticketChoice);
@@ -41,7 +41,7 @@ int checkTicketChoice() {
 	} while (!(ticketChoice == 1 || ticketChoice == 2)); // 1 또는 2를 선택하지 않았을 경우 다시 입력을 받는다. 
     return ticketChoice;
 }
-
+// 이용시간 선택 
 int checkTimeChoice() {
 	do {
 	printf("\n1. 1Day 이용권\n2. After4 이용권(이용시간 : 오후 4시부터 입장)\n선택 : ");
@@ -53,29 +53,43 @@ int checkTimeChoice() {
     return timeChoice;
 }
 
-void checkAge() {
+// 만나이 계산 
+int checkAge() {
     printf("\n주민등록번호 앞 6자리를 입력해 주세요.\n입력 : ");
-    scanf("%d", & personNumberFront);
+    scanf("%d", & residentRegistrationNumber_Front);
     printf("\n주민등록번호 뒷자리 첫 번째 숫자를 입력해 주세요.\n입력 : ");
-    scanf("%d", & personNumberBack);
-    // 만 나이계산 
-    if (personNumberBack == 1 || personNumberBack == 2) { // 1900년대생  
-        age = (int)(today * 0.0001) + 100 - (int)(personNumberFront * 0.0001) + 1;
-        if (today - (int)(today * 0.0001) * 10000 < personNumberFront - (int)(personNumberFront * 0.0001) * 10000) {
+    scanf("%d", & residentRegistrationNumber_Back);
+
+    time_t rawTime;
+    struct tm* pTimeInfo;
+ 
+    rawTime = time(NULL);
+    pTimeInfo = localtime(&rawTime); 
+
+    int year = pTimeInfo->tm_year - 100 ; // year = 현재 년도 - 1900년  
+    int month = pTimeInfo->tm_mon +1; // month = 현재 월 
+	int day = pTimeInfo->tm_mday; // day = 현재 일 
+	
+	today = year * 10000 + month * 100 + day;
+	
+    if (residentRegistrationNumber_Back == 1 || residentRegistrationNumber_Back == 2) { // 1900년대생  
+        age = (int)(today * 0.0001) + 100 - (int)(residentRegistrationNumber_Front * 0.0001) + 1;
+        if (today - (int)(today * 0.0001) * 10000 < residentRegistrationNumber_Front - (int)(residentRegistrationNumber_Front * 0.0001) * 10000) {
             realAge = age - 2;
         } else {
             realAge = age - 1;
         }
-    } else if (personNumberBack == 3 || personNumberBack == 4) { // 2000년대생 
-        age = (int)(today * 0.0001) + 100 - (int)(personNumberFront * 0.0001) + 1 - 100;
-        if (today - (int)(today * 0.0001) * 10000 < personNumberFront - (int)(personNumberFront * 0.0001) * 10000) {
+    } else if (residentRegistrationNumber_Back == 3 || residentRegistrationNumber_Back == 4) { // 2000년대생 
+        age = (int)(today * 0.0001) + 100 - (int)(residentRegistrationNumber_Front * 0.0001) + 1 - 100;
+        if (today - (int)(today * 0.0001) * 10000 < residentRegistrationNumber_Front - (int)(residentRegistrationNumber_Front * 0.0001) * 10000) {
             realAge = age - 2;
         } else {
             realAge = age - 1;
         }
-    } else {}		
+    } else {}	
 }
 
+// 우대할인 선택 
 int checkAlwaysPrefer() {
 	printf("\n***************************** 우 대 할 인  *****************************");
     printf("\n\n해당사항이 있으시면 입력해 주세요. 없다면 6번을 입력해 주세요. (중복 불가)\n");
@@ -88,7 +102,7 @@ int checkAlwaysPrefer() {
 	} while (!(alwaysPrefer == 1 || alwaysPrefer == 2 || alwaysPrefer == 3 || alwaysPrefer == 4 || alwaysPrefer == 5 || alwaysPrefer == 6)); // 1에서 6을  선택하지 않았을 경우 다시 입력을 받는다. 
     return alwaysPrefer;
 }
-
+// 연령별 구분 
 int checkPersonType() {
 	if (realAge >= ADULT_MIN_AGE) {
         personType = 1; // 어른 
@@ -100,7 +114,7 @@ int checkPersonType() {
         personType = 4; // 베이비 
     }
 }
-
+// 선택 조건별 가격저장 
 int checkPrice_ChoiceAndAge() {
     if (ticketChoice == 1 && timeChoice == 1 && personType == 1) {
         price += ALL_1DAY_ADULT;
@@ -136,7 +150,7 @@ int checkPrice_ChoiceAndAge() {
         price += BABY;
     } else {}	
 }
-
+// 유아놀이시설 이용
 int checkPrice_KidsPlayroom() {
     if (realAge > 0 && realAge < 1) {
         price = FREE;
@@ -163,7 +177,7 @@ int checkPrice_alwaysPrefer() {
         price *= SODIER_ON_VACATION;
         printf("\n휴가장병(의경, 의무소방관, 군무원 포함) 공식증빙 지참 고객 + 동반인 1인\n종합이용권 49%% 우대\n");
     } else if (ticketChoice == 1 && alwaysPrefer == 4) { // 임산부는 종합 이용권만 할인
-        if (personNumberBack == 2 || personNumberBack == 4) {
+        if (residentRegistrationNumber_Back == 2 || residentRegistrationNumber_Back == 4) {
             price *= PREGNANT;
             printf("\n모자수첩 등 공식증빙 지참 임산부 본인\n종합이용권 50%% 우대\n");
         } else {
@@ -180,16 +194,20 @@ int checkPrice_alwaysPrefer() {
 int checkPrice_Old() {
 	if (realAge >= ADULT_MAX_AGE && ticketChoice == 1 && timeChoice == 1 && alwaysPrefer == 6) {
         price = ALL_1DAY_KID;
-        personType = 0; // 어른(경로우대)
+        personType = 0; // 노인  
+		alwaysPrefer = 0; // 경로우대 어린이 요금 적용 
     } else if (realAge >= ADULT_MAX_AGE && ticketChoice == 1 && timeChoice == 2 && alwaysPrefer == 6) {
         price = ALL_AFTER4_KID;
         personType = 0;
+        alwaysPrefer = 0;
     } else if (realAge >= ADULT_MAX_AGE && ticketChoice == 2 && timeChoice == 1 && alwaysPrefer == 6) {
         price = PARK_1DAY_KID;
         personType = 0;
+        alwaysPrefer = 0;
     } else if (realAge >= ADULT_MAX_AGE && ticketChoice == 2 && timeChoice == 2 && alwaysPrefer == 6) {
         price = PARK_AFTER4_KID;
         personType = 0;
+        alwaysPrefer = 0;
     } else {}
 }
 
@@ -230,10 +248,12 @@ void time() {
 } 
 
 int printReceipt() {
+	printf("=============================================================================\n");
 	printf("\n\n                                  롯 데 월 드\n");
 	printf("\n                                                     ");
 	time();
     printf("=============================================================================\n");
+    
     printf("티켓종류\t이용시간\t구분\t수량\t    가격\t     할인내역\n");
     printf("-----------------------------------------------------------------------------");
     for (int i = 0; i < orderCount; i++) {
@@ -254,6 +274,9 @@ int printReceipt() {
                 break;
         }
         switch (orderList[i][2]) {
+        	case 0:
+			    printf("%14s", "노인");
+                break;
             case 1:
                 printf("%14s", "어른");
                 break;
@@ -270,6 +293,9 @@ int printReceipt() {
         printf("%5d 장", orderList[i][3]);
         printf("%9d 원", orderList[i][4]);
         switch (orderList[i][5]) {
+        	case 0:
+                printf("%21s", "경로 우대");
+                break;
             case 1:
                 printf("%21s", "장애인 우대");
                 break;
@@ -299,31 +325,31 @@ int printReceipt() {
 int main() {
     do {
         do {
-            price = 0;
+            price = 0; // 티켓가격 초기화 
             
-            checkTicketChoice();
-            checkTimeChoice();
-			checkAge();
-			checkAlwaysPrefer();
-			checkPersonType();
+            checkTicketChoice(); // 이용권 선택 
+            checkTimeChoice(); // 이용시간 선택 
+			checkAge(); // 만 나이 계산 
+			checkAlwaysPrefer(); // 우대할인 선택 
+			checkPersonType(); // 연령별 구분 
 			
-            checkPrice_ChoiceAndAge();
-			checkPrice_KidsPlayroom();
-			checkPrice_alwaysPrefer();
-			checkPrice_Old();
+            checkPrice_ChoiceAndAge(); // 선택한 이용권 이용시간 연령조건에 맞게 초기가격 저장 
+			checkPrice_KidsPlayroom(); // 유아 놀이시설 이용시 가격과 베이비 카테고리 가격 분류 
+			checkPrice_alwaysPrefer(); // 우대할인선택시 가격 할인 
+			checkPrice_Old(); // 우대할인 해당없는 노인들은 어린이 가격으로 책정 
 			
-            checkTicketCount();
+            checkTicketCount(); // 구매하는 티켓 수 
             
-            showPrice();
-            totalprice += ticketCount * price;
+            showPrice(); // 가격 출력 
+            totalprice += ticketCount * price; // 총 금액 누적 
             
-            makeArray();
+            makeArray(); // 배열 생성 
             
-			checkWhetherToBuy();
+			checkWhetherToBuy(); // 더 구매할 것인지 아닌지 
 			
-        } while (whetherToBuy == 1);
-        printReceipt();
-		checkWhetherToBuy();
+        } while (whetherToBuy == 1); 
+        printReceipt(); // 영수증 출력 
+		checkWhetherToBuy(); // 더 구매할 것인지 아닌지 
     } while (whetherToBuy == 1);
     printf("\n종료하겠습니다."); 
 }
